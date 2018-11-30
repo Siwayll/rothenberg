@@ -12,7 +12,7 @@ services:
         volumes:
             - .:/src
             # @TODO check if it is not useless to use this PHP configuration file
-            #- ./env/php/cli.ini:/usr/local/etc/php/conf.d/host/php.ini
+            #- ./rothenberg/php/cli.ini:/usr/local/etc/php/conf.d/host/php.ini
 
     composer:
         user: ${USER_ID}

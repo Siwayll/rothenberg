@@ -17,8 +17,8 @@
 /web/js
 /web/uploads/
 /phpunit.xml
-/env/node/node_modules
-/env/node/npm-debug.log
+/rothenberg/node/node_modules
+/rothenberg/node/npm-debug.log
 /composer.passwd
 /packages
 !.gitkeep

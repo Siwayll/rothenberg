@@ -10,7 +10,7 @@ MV := mv -f
 
 REPOSITORY_STATUS := $(shell git status --porcelain | wc -l)
 
-include resources/env/utils.mk
+include resources/rothenberg/utils.mk
 
 define check-repository
 ifneq "$(strip $(REPOSITORY_STATUS))" "0"

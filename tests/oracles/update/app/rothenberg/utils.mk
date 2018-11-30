@@ -11,7 +11,7 @@ $(RM) $(patsubst uninstall/%,%,$1)
 endef
 
 define install
-cp env/bin/$(notdir $1) $1
+cp rothenberg/bin/$(notdir $1) $1
 $(call executable,$1)
 endef
 

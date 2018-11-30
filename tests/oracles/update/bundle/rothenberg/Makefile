@@ -1,4 +1,4 @@
-include env/common.mk
+include rothenberg/common.mk
 
 # Install
 
@@ -18,5 +18,5 @@ tmp:
 bin/docker-compose: | bin/. .env
 	$(call install,$@)
 
-.env: env/.env.dist $(SSH_KEY) | $(COMPOSER_CACHE)
+.env: rothenberg/.env.dist $(SSH_KEY) | $(COMPOSER_CACHE)
 	export ETC=$(ETC) USER_HOME=$(HOME) USER_ID=$(USER_ID) SYMFONY_ENV=$(SYMFONY_ENV) SSH_KEY=$(SSH_KEY) COMPOSER_CACHE=$(COMPOSER_CACHE) ENV=$(ENV) SYMFONY_DEBUG=$(SYMFONY_DEBUG) && $(call export-file,$<,$@)

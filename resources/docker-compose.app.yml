@@ -7,14 +7,14 @@ services:
         working_dir: /src
         volumes:
             - .:/src
-            - ./env/nginx/default.conf:/etc/nginx/conf.d/default.conf
+            - ./rothenberg/nginx/default.conf:/etc/nginx/conf.d/default.conf
         depends_on:
             - php-fpm
         environment:
             - VIRTUAL_HOST=${VIRTUAL_HOST}
             - VIRTUAL_PORT=80
         networks:
-            - rothenberg # Link to rothenberg network, handled by `env/docker-compose.rothenberg.yml` and run by `make` at `start`, see the `networks` section below.
+            - rothenberg # Link to rothenberg network, handled by `rothenberg/docker-compose.rothenberg.yml` and run by `make` at `start`, see the `networks` section below.
             - default
 
     hosts:
@@ -33,7 +33,7 @@ services:
             - SYMFONY_DEBUG=${SYMFONY_DEBUG}
         volumes:
             - .:/src
-            - ./env/php/fpm.ini:/usr/local/etc/php/conf.d/host/php.ini
+            - ./rothenberg/php/fpm.ini:/usr/local/etc/php/conf.d/host/php.ini
 
     php-cli:
         user: ${USER_ID}
@@ -45,7 +45,7 @@ services:
             - SYMFONY_DEBUG=${SYMFONY_DEBUG}
         volumes:
             - .:/src
-            - ./env/php/cli.ini:/usr/local/etc/php/conf.d/host/php.ini
+            - ./rothenberg/php/cli.ini:/usr/local/etc/php/conf.d/host/php.ini
 
     composer:
         user: ${USER_ID}
@@ -68,7 +68,7 @@ services:
     node:
         user: ${USER_ID}
         image: node:7.10.1
-        working_dir: /src/env/node
+        working_dir: /src/rothenberg/node
         volumes:
             - ${NPM_CACHE}:/.npm
             - .:/src

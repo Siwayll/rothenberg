@@ -3,7 +3,7 @@ THIS_DIR := $(dir $(THIS_FILE))
 RESOURCES_DIR := $(THIS_DIR)resources
 ROTHENBERG_EXISTS = $(wildcard .rothenberg)
 
-include $(RESOURCES_DIR)/env/utils.mk
+include $(RESOURCES_DIR)/rothenberg/utils.mk
 
 PHP_BIN ?= bin/php
 GIT_BIN ?= $(call locate-binary,git)
@@ -31,13 +31,13 @@ endif
 
 # Implicit rules
 
-env/%: $(RESOURCES_DIR)/env/% | env
+rothenberg/%: $(RESOURCES_DIR)/rothenberg/% | rothenberg
 	$(CP) $< $@
 
-env/bin/%: $(RESOURCES_DIR)/env/bin/% | env/bin
+rothenberg/bin/%: $(RESOURCES_DIR)/rothenberg/bin/% | rothenberg/bin
 	$(CP) $< $@
 
-env/nginx/%: $(RESOURCES_DIR)/env/nginx/% | env/nginx
+rothenberg/nginx/%: $(RESOURCES_DIR)/rothenberg/nginx/% | rothenberg/nginx
 	$(CP) $< $@
 
 src/AppBundle/Resources/config/%: | src/AppBundle/Resources/config
@@ -61,7 +61,7 @@ src/%: | src
 tests/units/%: $(RESOURCES_DIR)/tests/units/% | tests/units
 	$(CP) $< $@
 
-env/php/%.ini: | env/php
+rothenberg/php/%.ini: | rothenberg/php
 	$(CP) $(RESOURCES_DIR)/$@ $@
 
 .gitignore: $(RESOURCES_DIR)/git/ignore.$(TARGET)
@@ -70,7 +70,7 @@ env/php/%.ini: | env/php
 .git%: $(RESOURCES_DIR)/git/%
 	$(call merge-file,$@,$<)
 
-bin/%: env/Makefile
+bin/%: rothenberg/Makefile
 	$(MAKE) -f $< $@
 
 %: $(RESOURCES_DIR)/%
@@ -79,7 +79,7 @@ bin/%: env/Makefile
 gc/%:
 	$(RM) $(patsubst gc/%,%,$@)
 
-env env/bin env/nginx app src web tests/units env/php app/config src/AppBundle src/AppBundle/Resources/config:
+rothenberg rothenberg/bin rothenberg/nginx app src web tests/units rothenberg/php app/config src/AppBundle src/AppBundle/Resources/config:
 	$(MKDIR) $@
 
 # Install
@@ -95,13 +95,13 @@ endif
 
 ## Make
 
-Makefile: | env/Makefile
+Makefile: | rothenberg/Makefile
 	$(CP) $(RESOURCES_DIR)/$@.$(TARGET) $@
 
-env/Makefile: $(RESOURCES_DIR)/env/$(TARGET).mk env/common.mk
+rothenberg/Makefile: $(RESOURCES_DIR)/rothenberg/$(TARGET).mk rothenberg/common.mk
 	$(CP) $< $@
 
-env/common.mk: env/utils.mk
+rothenberg/common.mk: rothenberg/utils.mk
 
 ## Tests
 
@@ -136,7 +136,7 @@ check-style.xml:
 ## Docker
 
 .PHONY: install/docker
-install/docker: docker-compose.yml docker-compose.override.yml env/.env.dist env/bin/docker-compose
+install/docker: docker-compose.yml docker-compose.override.yml rothenberg/.env.dist rothenberg/bin/docker-compose
 
 docker-compose.yml: $(RESOURCES_DIR)/docker-compose.$(TARGET).yml
 	$(CP) $< $@
@@ -144,11 +144,11 @@ docker-compose.yml: $(RESOURCES_DIR)/docker-compose.$(TARGET).yml
 docker-compose.override.yml:
 	$(CP) $(RESOURCES_DIR)/$@ $@
 
-env/.env.dist: $(RESOURCES_DIR)/env/.env.$(TARGET).dist | env
+rothenberg/.env.dist: $(RESOURCES_DIR)/rothenberg/.env.$(TARGET).dist | rothenberg
 	$(CP) $< $@
 
 ifeq ($(TARGET),app)
-env/bin/docker-compose: env/nginx/default.conf env/docker-compose.rothenberg.yml
+rothenberg/bin/docker-compose: rothenberg/nginx/default.conf rothenberg/docker-compose.rothenberg.yml
 endif
 
 ## Symfony
@@ -179,7 +179,7 @@ src/AppBundle/AppBundle.php: | src/AppBundle/Resources/config/routing.yml
 ## Git
 
 .PHONY: install/git
-install/git: .git .gitattributes .gitignore env/bin/pre-commit
+install/git: .git .gitattributes .gitignore rothenberg/bin/pre-commit
 
 .git:
 	$(GIT_BIN) init
@@ -194,15 +194,15 @@ install/php: install/php/fpm
 endif
 
 .PHONY: install/php/cli
-install/php/cli: env/php/cli.ini env/bin/bin.tpl env/bin/php
+install/php/cli: rothenberg/php/cli.ini rothenberg/bin/bin.tpl rothenberg/bin/php
 
 .PHONY: install/php/fpm
-install/php/fpm: env/php/fpm.ini
+install/php/fpm: rothenberg/php/fpm.ini
 
 .PHONY: install/php/composer
-install/php/composer: env/bin/composer
+install/php/composer: rothenberg/bin/composer
 
-env/bin/composer: env/bin/docker-compose
+rothenberg/bin/composer: rothenberg/bin/docker-compose
 
 ## Node
 
@@ -210,10 +210,10 @@ env/bin/composer: env/bin/docker-compose
 install/node:
 
 ifeq ($(TARGET),app)
-env/bin/docker-compose: env/bin/node env/bin/npm
+rothenberg/bin/docker-compose: rothenberg/bin/node rothenberg/bin/npm
 endif
 
 # GC
 
 .PHONY: gc
-gc: gc/env/php/cli gc/env/php/fpm gc/env/docker gc/env/.rothenberg
+gc: gc/rothenberg/php/cli gc/rothenberg/php/fpm gc/rothenberg/docker gc/rothenberg/.rothenberg

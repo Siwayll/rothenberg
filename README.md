@@ -51,7 +51,7 @@ It's possible to disable this feature via the `.rothenberg.config` file.
 
 ### Default PHP configuration for `CLI` and `FPM`
 
-`Rothenberg` provides a `php.ini` for CLI and FPM in `path/to/project/env/php/cli` and `path/to/project/env/php/fpm` respectively.
+`Rothenberg` provides a `php.ini` for CLI and FPM in `path/to/project/rothenberg/php/cli.ini` and `path/to/project/rothenberg/php/fpm.ini` respectively.
 
 ### Helpers to hide `docker` and `docker-compose`
 
@@ -66,19 +66,19 @@ For example, to update PHP dependencies, just do `bin/composer update`.
 ### Automated `nginx` virtual host management
 
 `Rothenberg` provides an automated `nginx` virtual host management via the `make` variable `VIRTUAL_HOST`.  
-To define the virtual host for your project, define its value before including `./env/Makefile` (see below for more information about that):
+To define the virtual host for your project, define its value before including `./rothenberg/Makefile` (see below for more information about that):
 
 ```
 VIRTUAL_HOST := foo.bar
 
-include env/Makefile
+include rothenberg/Makefile
 ```
 
 ### Networking
 
 `Rothenberg` allows you to share an [`nginx-proxy`](https://github.com/jwilder/nginx-proxy) docker's service between several projects, or any other services.  
 For that purpose, it creates a network named according to the value of make's `ROTHENBERG_NETWORK` variable, which has `rothenberg` as default value.  
-If you want to override its value, in the project's `Makefile`, just add `ROTHENBERG_NETWORK := yourNetworkName` before including `env/Makefile` (see below for more information about that).
+If you want to override its value, in the project's `Makefile`, just add `ROTHENBERG_NETWORK := yourNetworkName` before including `rothenberg/Makefile` (see below for more information about that).
 
 ### Environment management
 
@@ -105,9 +105,9 @@ Your secret key will never be copied by `Rothenberg`.
 ### Default `Makefile`
 
 If your project has no `Makefile` during its installation, `Rothenberg` provides a default `Makefile` for it.  
-Moreover, it provides in `path/to/project/env` a `Makefile` with some interesting targets (see below).  
+Moreover, it provides in `path/to/project/rothenberg` a `Makefile` with some interesting targets (see below).  
 This `Makefile` is already included in the default `Makefile` provided by `Rothenberg`.  
-If the project already has a `Makefile` before `Rothenberg` installation, add `include env/Makefile` in it to use `Rothenberg` targets.
+If the project already has a `Makefile` before `Rothenberg` installation, add `include rothenberg/Makefile` in it to use `Rothenberg` targets.
 
 ### Project Management
 
@@ -121,8 +121,8 @@ If the project already has a `Makefile` before `Rothenberg` installation, add `i
 - `restart` restart all services ;
 - `status` display status of each services ;
 - `security` to check security of PHP dependencies ;
-- `check-style-php` to check PHP coding convention according to `env/php/check-style.xml` ;
-- `fix-style-php` to fix PHP coding convention according to `env/php/check-style.xml` ;
+- `check-style-php` to check PHP coding convention according to `check-style.xml` ;
+- `fix-style-php` to fix PHP coding convention according to `check-style.xml` ;
 - `unit-tests` to run all unit tests ;
 - `rothenberg/update` to update `Rothenberg` (see the `Update` section below) ;
 - `help` display a tiny help about each of available commands.
@@ -149,8 +149,8 @@ For example, if your project is an application located in `path/to/project`:
 1. `cd path/to/project` ;
 2. Do `wget -O - https://github.com/norsys/rothenberg/raw/master/install.sh | sh`.
 
-Once the install is done, if you already have a `./Makefile`, just add `include env/Makefile` in it to profit of `Rothenberg`'s targets.  
-You can also define `VIRTUAL_HOST` variable before including `env/Makefile` (see above for more informations).  
+Once the install is done, if you already have a `./Makefile`, just add `include rothenberg/Makefile` in it to profit of `Rothenberg`'s targets.  
+You can also define `VIRTUAL_HOST` variable before including `rothenberg/Makefile` (see above for more informations).  
 Moreover, you can edit [`./docker-compose.override.yml`](https://docs.docker.com/compose/extends/#understanding-multiple-compose-files) to add specific `docker` services or networks.  
 Finaly, do `make start` to download PHP depedencies and start services.
 
@@ -159,7 +159,7 @@ Finaly, do `make start` to download PHP depedencies and start services.
 1. `cd path/to/project` ;
 2. Do `(export TARGET=bundle; wget -O - https://github.com/norsys/rothenberg/raw/master/install.sh | sh)`.
 
-Once the install is done, if you already have a `./Makefile`, just add `include env/Makefile` in it to profit of `Rothenberg`'s targets.  
+Once the install is done, if you already have a `./Makefile`, just add `include rothenberg/Makefile` in it to profit of `Rothenberg`'s targets.  
 Moreover, you can edit [`./docker-compose.override.yml`](https://docs.docker.com/compose/extends/#understanding-multiple-compose-files) to add specific `docker` services or networks.
 
 ### Common steps for application and bundle
@@ -198,7 +198,7 @@ For more informations about `./docker-compose.override.yml`, please read its [of
 ### Configuration of `make`
 
 You can add [prerequisites](https://www.gnu.org/software/make/manual/html_node/Rule-Syntax.html#Rule-Syntax) for targets defined by `Rothenberg`.  
-For example, if you want to create the directory `var/mysql` via `make`, add in `./Makefile` after the include of `./env/Makefile`:
+For example, if you want to create the directory `var/mysql` via `make`, add in `./Makefile` after the include of `./rothenberg/Makefile`:
 
 ```
 vendor/autoload.php: | var/mysql
@@ -222,12 +222,12 @@ For more informations about `make`' syntax and features, please read its [offici
 ### Configuration of `PHP`
 
 You can customize PHP's configuration in `CLI` and `FPM` context.  
-To do that for `CLI` context, edit `path/to/project/env/php/cli/php.ini` (or `path/to/project/env/php/fpm/php.ini` for `FPM`) and execute `make restart`.
+To do that for `CLI` context, edit `path/to/project/rothenberg/php/cli/php.ini` (or `path/to/project/rothenberg/php/fpm/php.ini` for `FPM`) and execute `make restart`.
 For more information about PHP configuration, please read its [official documentation](http://php.net/manual/en/ini.core.php).
 
 ### Check styling
 
-Out of the box, `Rothenberg` provides PHP style checking configured via `path/to/project/env/check-style.xml` and `make check-style`, but you can add style checking for some other languages.
+Out of the box, `Rothenberg` provides PHP style checking configured via `path/to/project/rothenberg/check-style.xml` and `make check-style`, but you can add style checking for some other languages.
 For example, to add style checking for JavaScript using [`eslint`](http://eslint.org), add this in `path/to/project/Makefile`:
 
 ```

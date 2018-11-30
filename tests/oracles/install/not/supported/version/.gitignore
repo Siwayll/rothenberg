@@ -5,10 +5,10 @@
 /.rothenberg.config
 /bin/*
 /composer.passwd
-/env/node/node_modules
-/env/node/npm-debug.log
 /packages
 /phpunit.xml
+/rothenberg/node/node_modules
+/rothenberg/node/npm-debug.log
 /tmp/*
 /var/bootstrap.php.cache
 /var/cache/*

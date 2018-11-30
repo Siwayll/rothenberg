@@ -4,7 +4,7 @@ THIS_FILE := $(lastword $(MAKEFILE_LIST))
 
 -include .rothenberg
 
-include env/utils.mk
+include rothenberg/utils.mk
 
 ifneq ("$(wildcard .install)","")
 include .install
@@ -29,6 +29,7 @@ ifeq ($(filter $(SYMFONY_ENV),$(ENVS)),)
 $(error SYMFONY_ENV $(SYMFONY_ENV) is invalid!);
 endif
 
+COMPOSER_HOME ?= $(HOME)/.composer
 COMPOSER_CACHE ?= $(HOME)/.composer/cache
 COMPOSER_OPTIONS := --no-suggest
 
@@ -77,7 +78,7 @@ export
 bin/.:
 	$(MKDIR) bin
 
-bin/%: env/bin/% | bin/docker-compose
+bin/%: rothenberg/bin/% | bin/docker-compose
 	$(call install,$@)
 
 .PHONY: uninstall/%
@@ -135,8 +136,8 @@ docker/status: | bin/docker-compose ## Display status of containers.
 unit-tests: bin/atoum | tests/units/src/. ## Run all unit tests.
 	bin/atoum
 
-bin/atoum: vendor/bin/atoum env/bin/bin.tpl | bin/docker-compose
-	export BINARY=$< && $(call export-file,env/bin/bin.tpl,bin/atoum) && $(call executable,bin/atoum)
+bin/atoum: vendor/bin/atoum rothenberg/bin/bin.tpl | bin/docker-compose
+	export BINARY=$< && $(call export-file,rothenberg/bin/bin.tpl,bin/atoum) && $(call executable,bin/atoum)
 
 vendor/bin/atoum: | vendor/autoload.php
 
@@ -155,27 +156,27 @@ check-style: check-style-php ## Check coding conventions for all languages.
 check-style-php: bin/phpcs ## Check coding conventions for PHP code.
 	bin/phpcs --encoding=UTF-8 --ignore=.css --ignore=.scss --ignore=.js --standard=./check-style.xml ./src
 
-bin/phpcs: vendor/bin/phpcs env/bin/bin.tpl | bin/docker-compose
-	export BINARY=$< && $(call export-file,env/bin/bin.tpl,$@) && $(call executable,$@)
+bin/phpcs: vendor/bin/phpcs rothenberg/bin/bin.tpl | bin/docker-compose
+	export BINARY=$< && $(call export-file,rothenberg/bin/bin.tpl,$@) && $(call executable,$@)
 
 vendor/bin/phpcs: | vendor/autoload.php
 
 fix-style-php: bin/phpcbf ## Fix coding conventions for PHP code.
 	bin/phpcbf -w --no-patch --encoding=UTF-8 --ignore=.css --ignore=.scss --ignore=.js --standard=./check-style.xml ./src
 
-bin/phpcbf: vendor/bin/phpcbf env/bin/bin.tpl | bin/docker-compose
-	export BINARY=$< && $(call export-file,env/bin/bin.tpl,$@) && $(call executable,$@)
+bin/phpcbf: vendor/bin/phpcbf rothenberg/bin/bin.tpl | bin/docker-compose
+	export BINARY=$< && $(call export-file,rothenberg/bin/bin.tpl,$@) && $(call executable,$@)
 
 vendor/bin/phpcbf: | vendor/autoload.php
 
 ## Symfony
 
-bin/console: app/console.php env/bin/bin.tpl | vendor/autoload.php bin/docker-compose
-	export BINARY=app/console.php; $(call export-file,env/bin/bin.tpl,$@); $(call executable,$@)
+bin/console: app/console.php rothenberg/bin/bin.tpl | vendor/autoload.php bin/docker-compose
+	export BINARY=app/console.php; $(call export-file,rothenberg/bin/bin.tpl,$@); $(call executable,$@)
 
-vendor/autoload.php: composer.json env/bin/bin.tpl | bin/composer var/.
+vendor/autoload.php: composer.json rothenberg/bin/bin.tpl | bin/composer var/.
 	bin/composer install $(COMPOSER_OPTIONS)
-	for binary in $$(find vendor/bin -type l); do export BINARY=$$binary; $(call export-file,env/bin/bin.tpl,bin/$${binary##*/}); $(call executable,bin/$${binary##*/}); done
+	for binary in $$(find vendor/bin -type l); do export BINARY=$$binary; $(call export-file,rothenberg/bin/bin.tpl,bin/$${binary##*/}); $(call executable,bin/$${binary##*/}); done
 
 ## Composer
 
@@ -187,8 +188,8 @@ composer.passwd:
 
 ## Git
 
-.git/hooks/pre-commit: ./env/bin/pre-commit | .git ## Install pre-commit hook for git.
-	cp ./env/bin/pre-commit .git/hooks
+.git/hooks/pre-commit: ./rothenberg/bin/pre-commit | .git ## Install pre-commit hook for git.
+	cp ./rothenberg/bin/pre-commit .git/hooks
 	$(call executable,$@)
 
 .git:
