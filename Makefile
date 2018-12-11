@@ -10,6 +10,12 @@ MV := mv -f
 
 REPOSITORY_STATUS := $(shell git status --porcelain | wc -l)
 
+ifeq ($(wildcard $(GIT_BRANCH)),)
+GIT_BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD)
+else
+GIT_BRANCH := $(shell echo $(GIT_BRANCH))
+endif
+
 include resources/env/utils.mk
 
 define check-repository
@@ -22,7 +28,7 @@ define create-oracle
 $(RM) $1
 $(MKDIR) $(dir $1)
 $(CP) $2 $1
-sed -e "s#\"norsys/rothenberg\": \"dev-[^\"]*\"#\"norsys/rothenberg\": \"dev-$$(git rev-parse --abbrev-ref HEAD)\"#g" $1/composer.json > $1/composer.json.oracle
+sed -e "s#\"norsys/rothenberg\": \"dev-[^\"]*\"#\"norsys/rothenberg\": \"dev-$(GIT_BRANCH)\"#g" $1/composer.json > $1/composer.json.oracle
 $(MV) $1/composer.json.oracle $1/composer.json
 git -C $1 init
 git -C $1 add .

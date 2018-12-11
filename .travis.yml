@@ -1,0 +1,13 @@
+language: bash
+
+before_script:
+  - export GIT_BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
+
+script:
+  - make test/install/app
+  - make test/install/bundle
+  - make test/install/not/supported/version
+  - make test/update/app
+  - make test/update/bundle
+  - make test/bad/target
+  - make test/rothenberg/update/uninstall
