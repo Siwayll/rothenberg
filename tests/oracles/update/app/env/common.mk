@@ -161,6 +161,9 @@ bin/phpcs: vendor/bin/phpcs env/bin/bin.tpl | bin/docker-compose
 
 vendor/bin/phpcs: | vendor/autoload.php
 
+vendor/squizlabs/php_codesniffer/scripts/phpcs: | vendor/autoload.php
+	cp vendor/bin/phpcs vendor/squizlabs/php_codesniffer/scripts/phpcs
+
 fix-style-php: bin/phpcbf ## Fix coding conventions for PHP code.
 	bin/phpcbf -w --no-patch --encoding=UTF-8 --ignore=.css --ignore=.scss --ignore=.js --standard=./check-style.xml ./src
 

@@ -161,6 +161,9 @@ fix-style-php: bin/phpcbf ## Fix coding conventions for PHP code.
 bin/phpcbf: vendor/bin/phpcbf env/bin/bin.tpl | bin/docker-compose
 	export BINARY=$< && $(call export-file,env/bin/bin.tpl,$@) && $(call executable,$@)
 
+vendor/squizlabs/php_codesniffer/scripts/phpcs: | vendor/autoload.php
+	cp vendor/bin/phpcs vendor/squizlabs/php_codesniffer/scripts/phpcs
+
 vendor/bin/phpcbf: | vendor/autoload.php
 
 ## Symfony
