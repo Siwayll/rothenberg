@@ -95,7 +95,7 @@ test/update/%:
 	$(call create-oracle,tests/cases/update/$*,tests/oracles/update/$*)
 	touch tests/cases/update/$*/.mock-ssh-key
 	mkdir -p tests/tmp
-	export SSH_KEY=.mock-ssh-key && export COMPOSER_CACHE=../tmp && $(MAKE) -C tests/cases/update/$* rothenberg/update
+	export SSH_KEY=.mock-ssh-key && export COMPOSER_CACHE=../../../tmp && $(MAKE) -C tests/cases/update/$* rothenberg/update
 	git -C tests/cases/update/$* add .
 	git -C tests/cases/update/$* diff -- `grep -lr '# This file MUST NOT be updated by Rothenberg' tests/cases/update/$* | grep -v vendor/norsys/rothenberg`':(exclude)composer.lock' > tests/cases/update/oracle.$*.diff
 	@$(call assert,! -s tests/cases/update/oracle.$*.diff,$@,cat tests/cases/update/oracle.$*.diff)
