@@ -10,6 +10,9 @@ MV := mv -f
 
 REPOSITORY_STATUS := $(shell git status --porcelain | wc -l)
 
+MOCK_SSH_KEY := $(pwd)/tests/mock-ssh
+MOCK_COMPOSER_CACHE := $(pwd)/tests/mock-composer
+
 ifeq ($(wildcard $(GIT_BRANCH)),)
 GIT_BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD)
 else
@@ -78,6 +81,12 @@ tests-clean: ## Clean tests temporary files
 .PHONY: tests
 tests: test/install/app test/install/bundle test/update/app test/update/bundle test/bad/target test/rothenberg/update/uninstall test/install/not/supported/version ## Run tests
 
+$(MOCK_SSH_KEY):
+	touch $(MOCK_SSH_KEY)
+
+$(MOCK_COMPOSER_CACHE):
+	$(MKDIR) $(MOCK_COMPOSER_CACHE)
+
 test/install/%:
 	$(eval $(check-repository))
 	$(DOCKER_BIN) system prune -f
@@ -89,13 +98,11 @@ test/install/%:
 	@$(call assert,! -s tests/cases/install/oracle.$*.diff,$@,cat tests/cases/install/oracle.$*.diff)
 	@$(call assert,-z "$$(find tests/cases/install/$* -not -uid $$(id -u))",All files are owned by current user for $@)
 
-test/update/%:
+test/update/%: $(MOCK_SSH_KEY) $(MOCK_COMPOSER_CACHE)
 	$(eval $(check-repository))
 	$(DOCKER_BIN) system prune -f
 	$(call create-oracle,tests/cases/update/$*,tests/oracles/update/$*)
-	touch tests/mock-ssh-key
-	mkdir -p tests/tmp
-	export SSH_KEY=../../../mock-ssh-key && export COMPOSER_CACHE=../../../tmp && $(MAKE) -C tests/cases/update/$* rothenberg/update
+	export SSH_KEY=$(MOCK_SSH_KEY) && export COMPOSER_CACHE=$(MOCK_COMPOSER_CACHE) && $(MAKE) -C tests/cases/update/$* rothenberg/update
 	git -C tests/cases/update/$* add .
 	git -C tests/cases/update/$* diff -- `grep -lr '# This file MUST NOT be updated by Rothenberg' tests/cases/update/$* | grep -v vendor/norsys/rothenberg`':(exclude)composer.lock' > tests/cases/update/oracle.$*.diff
 	@$(call assert,! -s tests/cases/update/oracle.$*.diff,$@,cat tests/cases/update/oracle.$*.diff)
