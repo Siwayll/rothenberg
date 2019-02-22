@@ -11,7 +11,7 @@ MV := mv -f
 REPOSITORY_STATUS := $(shell git status --porcelain | wc -l)
 
 MOCK_SSH_KEY := $(shell pwd)/tests/cases/mock-ssh
-MOCK_COMPOSER_CACHE := $(shell pwd)/tests/cases/mock-composer
+MOCK_COMPOSER_HOME := $(shell pwd)/tests/cases/mock-composer
 
 ifeq ($(wildcard $(GIT_BRANCH)),)
 GIT_BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD)
@@ -84,8 +84,8 @@ tests: test/install/app test/install/bundle test/update/app test/update/bundle t
 $(MOCK_SSH_KEY):
 	touch $(MOCK_SSH_KEY)
 
-$(MOCK_COMPOSER_CACHE):
-	$(MKDIR) $(MOCK_COMPOSER_CACHE)
+$(MOCK_COMPOSER_HOME):
+	$(MKDIR) $(MOCK_COMPOSER_HOME)
 
 test/install/%:
 	$(eval $(check-repository))
@@ -102,7 +102,7 @@ test/update/%: $(MOCK_SSH_KEY) $(MOCK_COMPOSER_CACHE)
 	$(eval $(check-repository))
 	$(DOCKER_BIN) system prune -f
 	$(call create-oracle,tests/cases/update/$*,tests/oracles/update/$*)
-	export SSH_KEY=$(MOCK_SSH_KEY) && export COMPOSER_CACHE=$(MOCK_COMPOSER_CACHE) && $(MAKE) -C tests/cases/update/$* rothenberg/update
+	export SSH_KEY=$(MOCK_SSH_KEY) && export COMPOSER_HOME=$(MOCK_COMPOSER_HOME) && $(MAKE) -C tests/cases/update/$* rothenberg/update
 	git -C tests/cases/update/$* add .
 	git -C tests/cases/update/$* diff -- `grep -lr '# This file MUST NOT be updated by Rothenberg' tests/cases/update/$* | grep -v vendor/norsys/rothenberg`':(exclude)composer.lock' > tests/cases/update/oracle.$*.diff
 	@$(call assert,! -s tests/cases/update/oracle.$*.diff,$@,cat tests/cases/update/oracle.$*.diff)
