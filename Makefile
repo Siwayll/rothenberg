@@ -10,8 +10,8 @@ MV := mv -f
 
 REPOSITORY_STATUS := $(shell git status --porcelain | wc -l)
 
-MOCK_SSH_KEY := $(shell pwd)/tests/mock-ssh
-MOCK_COMPOSER_CACHE := $(shell pwd)/tests/mock-composer
+MOCK_SSH_KEY := $(shell pwd)/tests/cases/mock-ssh
+MOCK_COMPOSER_CACHE := $(shell pwd)/tests/cases/mock-composer
 
 ifeq ($(wildcard $(GIT_BRANCH)),)
 GIT_BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD)
