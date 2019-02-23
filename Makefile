@@ -98,7 +98,7 @@ test/install/%:
 	@$(call assert,! -s tests/cases/install/oracle.$*.diff,$@,cat tests/cases/install/oracle.$*.diff)
 	@$(call assert,-z "$$(find tests/cases/install/$* -not -uid $$(id -u))",All files are owned by current user for $@)
 
-test/update/%: $(MOCK_SSH_KEY) $(MOCK_COMPOSER_CACHE)
+test/update/%: tests/cases $(MOCK_SSH_KEY) $(MOCK_COMPOSER_CACHE)
 	$(eval $(check-repository))
 	$(DOCKER_BIN) system prune -f
 	$(call create-oracle,tests/cases/update/$*,tests/oracles/update/$*)
@@ -138,6 +138,9 @@ test/install/not/supported/version:
 	@$(call assert, "$$(tail -n 1 tests/cases/install/not/supported/version/version.log | grep -c 'Symfony version lesser or greater than 3 is not currently supported.')" = '1', $@)
 
 test/bad/target test/install/%: GIT_BRANCH ?= $(shell git -C $(realpath $(THIS_DIR)) rev-parse --abbrev-ref HEAD)
+
+tests/cases:
+	$(MKDIR) tests/cases
 
 # Help
 
