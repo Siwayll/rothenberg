@@ -102,7 +102,6 @@ test/update/%: tests/cases $(MOCK_SSH_KEY) $(MOCK_COMPOSER_CACHE)
 	$(eval $(check-repository))
 	$(DOCKER_BIN) system prune -f
 	$(call create-oracle,tests/cases/update/$*,tests/oracles/update/$*)
-	echo $(MOCK_COMPOSER_HOME)
 	export SSH_KEY=$(MOCK_SSH_KEY) && export COMPOSER_HOME=$(MOCK_COMPOSER_HOME) && $(MAKE) -C tests/cases/update/$* rothenberg/update
 	git -C tests/cases/update/$* add .
 	git -C tests/cases/update/$* diff -- `grep -lr '# This file MUST NOT be updated by Rothenberg' tests/cases/update/$* | grep -v vendor/norsys/rothenberg`':(exclude)composer.lock' > tests/cases/update/oracle.$*.diff
